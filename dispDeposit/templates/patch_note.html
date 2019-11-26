@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
+{%  load static %}
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" href="{%  static 'css/cover.css' %}">
 </head>
-<body>
+<body class="text-center">
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <header class="masthead mb-auto">
+    <div class="inner">
+      <h3 class="masthead-brand">자이언츠 실책 저축 계산기</h3>
+      <nav class="nav nav-masthead justify-content-center">
+        <a class="nav-link" href="{% url 'index' %}">Home</a>
+        <a class="nav-link" href="{% url 'history' %}">History</a>
+        <a class="nav-link active" href="{% url 'patch_note' %}">Patch Note</a>
+        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main role="main" class="inner cover">
 
+
+  </main>
+  <footer class="mastfoot mt-auto">
+    <div class="inner">
+      <p>Contact </a><a href="mailto:raccoon.zip@gmail.com">ADMIN</a>.</p>
+    </div>
+  </footer>
+</div>
 </body>
-</html>

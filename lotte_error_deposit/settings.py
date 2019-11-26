@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dispDeposit.apps.DispdepositConfig',
     'parsed_total_data.apps.ParsedTotalDataConfig',
+    'patch_board.apps.PatchBoardConfig',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +128,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'dispDeposit', 'static')
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media/'
+AWS_QUERYSTRIRNG_AUTH = False

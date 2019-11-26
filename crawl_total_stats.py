@@ -6,13 +6,20 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lotte_error_deposit.settings")
 import django
 django.setup()
 
-from parsed_total_data.models import TotalData
+from parsed_total_data.models import TotalData, SeasonData
 
 '''
     SO(Strike Outs/500) & DP(Double Plays/1000) : http://www.statiz.co.kr/stat.php?re=0&lr=5
     HR(Home Run/1000) & BK(Balk/3000) & PB(Passed Balls/5000) : http://www.statiz.co.kr/stat.php?re=1&lr=5
     E(Error/10000) : http://www.statiz.co.kr/stat.php?re=2&lr=5
 '''
+
+def calc_money(stkOut, dbplay, homerun, balk, passedBall, error):
+    money = (stkOut * 500) + (dbplay * 1000) + \
+            (homerun * 1000) + (balk * 3000) + \
+            (passedBall * 5000) + (error * 10000)
+
+    return money
 
 def get_data() :
     df_bat = pd.read_html('http://www.statiz.co.kr/stat.php?re=0&lr=5')[0]
@@ -78,11 +85,45 @@ def get_data() :
 
 if __name__=='__main__':
 
+    season_data = SeasonData.objects.last()
     total_data = get_data()
-    TotalData(date = datetime.date.today(),
-              stkOut = total_data['stkOut'],
-              dbplay = total_data['dbplay'],
-              homerun = total_data['homerun'],
-              balk = total_data['balk'],
-              passedBall = total_data['passedBall'],
-              error = total_data['error']).save()
+
+    if season_data is not None :
+        diff_stkOut = int(total_data['stkOut']) - (getattr(season_data, 'stkOut'))
+        diff_dbplay = int(total_data['dbplay']) - (getattr(season_data, 'dbplay'))
+        diff_homerun = int(total_data['homerun']) - (getattr(season_data, 'homerun'))
+        diff_balk = int(total_data['balk']) - (getattr(season_data, 'balk'))
+        diff_passedBall = int(total_data['passedBall']) - (getattr(season_data, 'passedBall'))
+        diff_error = int(total_data['error']) - (getattr(season_data, 'error'))
+
+        print(diff_stkOut)
+
+        # 실책이 발생한 날만 저장하도록 수정할 것
+        TotalData(date = datetime.date.today(),
+                  stkOut = diff_stkOut,
+                  dbplay = diff_dbplay,
+                  homerun = diff_homerun,
+                  balk = diff_balk,
+                  passedBall = diff_passedBall,
+                  error = diff_error,
+                  money = calc_money(diff_stkOut, diff_dbplay,
+                                     diff_homerun, diff_balk,
+                                     diff_passedBall, diff_error)).save()
+
+        if getattr(season_data,'date') == datetime.date.today():
+            SeasonData.objects.delete()
+
+    SeasonData(date = datetime.date.today().year,
+               stkOut = total_data['stkOut'],
+               dbplay = total_data['dbplay'],
+               homerun = total_data['homerun'],
+               balk = total_data['balk'],
+               passedBall = total_data['passedBall'],
+               error = total_data['error'],
+               money = calc_money(int(total_data['stkOut']),
+                                  int(total_data['dbplay']),
+                                  int(total_data['homerun']),
+                                  int(total_data['balk']),
+                                  int(total_data['passedBall']),
+                                  int(total_data['error']))
+               ).save()
